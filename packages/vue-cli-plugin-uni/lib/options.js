@@ -5,6 +5,22 @@ const {
   pathToRegexp
 } = require('@dcloudio/uni-cli-shared/lib/util')
 
+const configNames = [
+  'postcss.config.mjs',
+  'postcss.config.cjs',
+  'postcss.config.js'
+]
+
+function resolvePostcssConfig(dir) {
+  for (const name of configNames) {
+    const configPath = path.resolve(dir, name)
+    if (fs.existsSync(configPath)) {
+      return configPath
+    }
+  }
+  return null
+}
+
 module.exports = function initOptions (options) {
   const {
     getPlatformScss,
@@ -86,8 +102,8 @@ module.exports = function initOptions (options) {
     options.css.loaderOptions.sass.sassOptions.outputStyle = 'expanded'
   }
   options.css.loaderOptions.sass.prependData = sassData
-  const userPostcssConfigPath = path.resolve(process.env.UNI_INPUT_DIR, 'postcss.config.js')
-  const configPath = fs.existsSync(userPostcssConfigPath) ? userPostcssConfigPath : path.resolve(process.env.UNI_CLI_CONTEXT, 'postcss.config.js')
+  const userPostcssConfigPath = resolvePostcssConfig(process.env.UNI_INPUT_DIR)
+  const configPath = fs.existsSync(userPostcssConfigPath) ? userPostcssConfigPath : resolvePostcssConfig(process.env.UNI_CLI_CONTEXT)
   if (webpack.version[0] > 4) {
     options.css.loaderOptions.postcss.postcssOptions.config = configPath
   } else {

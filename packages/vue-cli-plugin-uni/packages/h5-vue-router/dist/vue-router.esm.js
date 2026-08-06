@@ -2353,7 +2353,10 @@ var HashHistory = (function (History$$1) {
       var id = e.state && e.state.id;
       if (!id) {
         // 当手动切换页面时，强制刷新
-        return window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 50)
+        return 
         // id = router.id
       }
 
