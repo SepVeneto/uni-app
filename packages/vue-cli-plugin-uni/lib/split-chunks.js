@@ -49,26 +49,50 @@ function createCacheGroups () {
   return cacheGroups
 }
 
+// mp-weixin 将 static/env.json 单独拆分为 common/env chunk，避免进入 common/vendor
+function createEnvJsonCacheGroup () {
+  if (process.env.UNI_PLATFORM !== 'mp-weixin') {
+    return null
+  }
+  const envJsonPath = normalizePath(path.resolve(process.env.UNI_INPUT_DIR, 'env.json'))
+  return {
+    env: {
+      enforce: true,
+      priority: 10,
+      test: function (module) {
+        if (!module.resource) {
+          return false
+        }
+        return normalizePath(module.resource) === envJsonPath
+      },
+      name: 'common/env',
+      chunks: 'all'
+    }
+  }
+}
+
 module.exports = function getSplitChunks () {
   const {
     normalizePath
   } = require('@dcloudio/uni-cli-shared')
 
+  const envJsonCacheGroup = createEnvJsonCacheGroup()
+
   if (process.env.UNI_USING_V3) {
     return {
-      cacheGroups: createCacheGroups()
+      cacheGroups: Object.assign(createCacheGroups(), envJsonCacheGroup)
     }
   }
 
   if (!process.env.UNI_USING_COMPONENTS) {
     return {
-      cacheGroups: {
+      cacheGroups: Object.assign({
         commons: {
           minChunks: 2,
           name: 'common/vendor',
           chunks: 'all'
         }
-      }
+      }, envJsonCacheGroup)
     }
   }
 
@@ -79,7 +103,7 @@ module.exports = function getSplitChunks () {
       chunks (chunk) { // 防止 node_modules 内 vue 组件被 split
         return chunk.name.indexOf('node-modules') !== 0
       },
-      cacheGroups: {
+      cacheGroups: Object.assign({
         default: false,
         vendors: false,
         commons: {
@@ -100,7 +124,7 @@ module.exports = function getSplitChunks () {
           name: 'common/vendor',
           chunks: 'all'
         }
-      }
+      }, envJsonCacheGroup)
     }
   }
 
@@ -241,6 +265,8 @@ module.exports = function getSplitChunks () {
       }
     })(root)
   })
+
+  Object.assign(cacheGroups, envJsonCacheGroup)
 
   return {
     chunks (chunk) { // 防止 node_modules 内 vue 组件被 split

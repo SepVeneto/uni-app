@@ -64,6 +64,12 @@ module.exports = function generateApp (compilation) {
     compilation.updateAsset(runtimeJsPath, newSource)
   }
 
+  // mp-weixin 将 static/env.json 独立为 common/env chunk，需同步 require
+  let envJsRequire = ''
+  if (compilation.getAsset('common/env.js')) {
+    envJsRequire = `require('./common/env.js')\n`
+  }
+
   const specialMethods = getSpecialMethods()
 
   let beforeCode = ''
@@ -76,7 +82,7 @@ module.exports = function generateApp (compilation) {
     source: `${beforeCode}
 require('./common/runtime.js')
 require('./common/vendor.js')
-require('./common/main.js')`
+${envJsRequire}require('./common/main.js')`
   }, {
     file: 'app' + ext,
     source: `${importMainCss}

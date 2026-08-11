@@ -91,13 +91,15 @@ function processWxss (compilation, name, assets) {
 
 const parseRequirePath = path => path.startsWith('common') ? `./${path}` : path
 
-function procssJs (compilation, name, assets, hasVendor) {
+function procssJs (compilation, name, assets, hasVendor, hasEnv) {
   const dirname = path.dirname(name)
   const runtimeJsCode = `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/runtime.js')))}');`
   const vendorJsCode = hasVendor
     ? `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/vendor.js')))}');` : ''
+  const envJsCode = hasEnv
+    ? `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/env.js')))}');` : ''
   const mainJsCode = `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/main.js')))}');`
-  const code = `${runtimeJsCode}${vendorJsCode}${mainJsCode}` + assets[name].source().toString()
+  const code = `${runtimeJsCode}${vendorJsCode}${envJsCode}${mainJsCode}` + assets[name].source().toString()
   compilation.updateAsset(name, createSource(code))
 }
 
@@ -105,6 +107,7 @@ function processAssets (compilation) {
   const assets = compilation.assets
   const hasMainWxss = assets['common/main.wxss']
   const hasVendor = assets['common/vendor.js']
+  const hasEnv = assets['common/env.js']
   Object.keys(assets).forEach(name => {
     if (name.startsWith('common')) {
       return
@@ -113,7 +116,7 @@ function processAssets (compilation) {
     if (extname === '.wxss' && hasMainWxss && process.UNI_ENTRY[name.replace(extname, '')]) {
       processWxss(compilation, name, assets)
     } else if (extname === '.js') {
-      procssJs(compilation, name, assets, hasVendor)
+      procssJs(compilation, name, assets, hasVendor, hasEnv)
     }
   })
   // delete assets['common/main.js']
