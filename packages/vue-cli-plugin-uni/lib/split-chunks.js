@@ -65,7 +65,7 @@ function createEnvJsonCacheGroup () {
         }
         return normalizePath(module.resource) === envJsonPath
       },
-      name: 'common/env',
+      name: 'common/__env',
       chunks: 'all'
     }
   }
