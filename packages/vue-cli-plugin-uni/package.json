@@ -1,6 +1,6 @@
 {
   "name": "@rx-frontend/dcloudio-vue-cli-plugin-uni",
-  "version": "2.0.2-4020420240722003-alert.6",
+  "version": "2.0.2-4020420240722003-alert.7",
   "description": "uni-app plugin for vue-cli 3",
   "main": "index.js",
   "repository": {
