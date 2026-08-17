@@ -54,7 +54,7 @@ function createEnvJsonCacheGroup () {
   if (process.env.UNI_PLATFORM !== 'mp-weixin') {
     return null
   }
-  const envJsonPath = normalizePath(path.resolve(process.env.UNI_INPUT_DIR, 'env.json'))
+  const envJsonPath = normalizePath(path.resolve(process.env.UNI_INPUT_DIR, '__env.js'))
   return {
     env: {
       enforce: true,

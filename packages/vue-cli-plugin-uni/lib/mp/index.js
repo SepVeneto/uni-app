@@ -97,7 +97,7 @@ function procssJs (compilation, name, assets, hasVendor, hasEnv) {
   const vendorJsCode = hasVendor
     ? `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/vendor.js')))}');` : ''
   const envJsCode = hasEnv
-    ? `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/env.js')))}');` : ''
+    ? `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/__env.js')))}');` : ''
   const mainJsCode = `require('${normalizePath(parseRequirePath(path.relative(dirname, 'common/main.js')))}');`
   const code = `${runtimeJsCode}${vendorJsCode}${envJsCode}${mainJsCode}` + assets[name].source().toString()
   compilation.updateAsset(name, createSource(code))
@@ -107,7 +107,7 @@ function processAssets (compilation) {
   const assets = compilation.assets
   const hasMainWxss = assets['common/main.wxss']
   const hasVendor = assets['common/vendor.js']
-  const hasEnv = assets['common/env.js']
+  const hasEnv = assets['common/__env.js']
   Object.keys(assets).forEach(name => {
     if (name.startsWith('common')) {
       return

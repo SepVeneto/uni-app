@@ -66,8 +66,8 @@ module.exports = function generateApp (compilation) {
 
   // mp-weixin 将 static/env.json 独立为 common/env chunk，需同步 require
   let envJsRequire = ''
-  if (compilation.getAsset('common/env.js')) {
-    envJsRequire = `require('./common/env.js')\n`
+  if (compilation.getAsset('common/__env.js')) {
+    envJsRequire = `require('./common/__env.js')\n`
   }
 
   const specialMethods = getSpecialMethods()
